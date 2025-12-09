@@ -106,6 +106,16 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用或禁用员工账号")
+    public Result enbaleOrDisable(@PathVariable Integer status, Long id) {
+
+        employeeService.enableOrDisable(status, id);
+
+        return Result.success();
+
+    }
+
 
 
 

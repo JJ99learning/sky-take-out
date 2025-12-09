@@ -110,4 +110,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(pageResult.getTotal(), pageResult.getResult());
     }
 
+    /**
+     * 启用或禁用员工账号
+     * @param status
+     * @param id
+     */
+    @Override
+    public void enableOrDisable(Integer status, Long id) {
+
+        // 为了动态更新，所以创建employee对象并传入对象，具体要更新哪个字段则xml里配置
+        // 达到update方法的复用
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id).build();
+
+        employeeMapper.update(employee);
+
+    }
+
 }
