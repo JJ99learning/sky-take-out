@@ -116,7 +116,29 @@ public class EmployeeController {
 
     }
 
+    /**
+     * 根据员工id查找信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查找员工信息")
+    public Result<Employee> getById(@PathVariable Long id) {
 
+        Employee employee = employeeService.queryById(id);
+        employee.setPassword(null);
+
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    @ApiOperation("修改员工资料")
+    public Result updateInfo(@RequestBody EmployeeDTO employeeDTO) {
+
+        employeeService.updateInfo(employeeDTO);
+
+        return Result.success();
+    }
 
 
 
