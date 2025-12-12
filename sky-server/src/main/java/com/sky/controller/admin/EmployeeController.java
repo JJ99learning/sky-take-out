@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
@@ -163,25 +164,15 @@ public class EmployeeController {
     @ApiOperation("修改员工密码")
     public Result editPassword(@RequestBody PasswordEditDTO  passwordEditDTO) {
 
-        // 检查required的参数
-        if (passwordEditDTO.getEmpId() == null) {
-            throw new PasswordEditFailedException("EmpId 不能为空");
-        }
-
-        if (passwordEditDTO.getNewPassword() == null || passwordEditDTO.getNewPassword().trim().isEmpty()) {
-            throw new PasswordEditFailedException("newPassword 不能为空");
-        }
-
-        if (passwordEditDTO.getOldPassword() == null || passwordEditDTO.getOldPassword().trim().isEmpty()) {
-            throw new PasswordEditFailedException("oldPassword 不能为空");
-        }
 
         // 和DB里面的记录对比一下旧密码
-        String dbPassword = employeeService.queryById(passwordEditDTO.getEmpId()).getPassword();
-        Assert.isTrue(employeeService.isPasswordMatched(passwordEditDTO.getOldPassword(), dbPassword), "oldPassword 不正确");
+        String dbPassword = employeeService.queryById(BaseContext.getCurrentId()).getPassword();
+        if (!employeeService.isPasswordMatched(passwordEditDTO.getOldPassword(), dbPassword)) {
+            throw new PasswordEditFailedException("oldPassword 不正确");
+        }
 
         // 修改密码
-        Employee build = Employee.builder().id(passwordEditDTO.getEmpId()).password(passwordEditDTO.getNewPassword()).build();
+        Employee build = Employee.builder().id(BaseContext.getCurrentId()).password(passwordEditDTO.getNewPassword()).build();
         boolean status = employeeService.changePassword(build);
 
         if (!status) {
