@@ -4,7 +4,9 @@ import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
+import com.sky.exception.PasswordEditFailedException;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
@@ -15,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -106,6 +109,12 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 启用或禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
     @PostMapping("/status/{status}")
     @ApiOperation("启用或禁用员工账号")
     public Result enbaleOrDisable(@PathVariable Integer status, Long id) {
@@ -131,6 +140,11 @@ public class EmployeeController {
         return Result.success(employee);
     }
 
+    /**
+     * 修改员工资料
+     * @param employeeDTO
+     * @return
+     */
     @PutMapping
     @ApiOperation("修改员工资料")
     public Result updateInfo(@RequestBody EmployeeDTO employeeDTO) {
@@ -138,6 +152,45 @@ public class EmployeeController {
         employeeService.updateInfo(employeeDTO);
 
         return Result.success();
+    }
+
+    /**
+     * 修改员工密码
+     * @param passwordEditDTO
+     * @return
+     */
+    @PutMapping("/editPassword")
+    @ApiOperation("修改员工密码")
+    public Result editPassword(@RequestBody PasswordEditDTO  passwordEditDTO) {
+
+        // 检查required的参数
+        if (passwordEditDTO.getEmpId() == null) {
+            throw new PasswordEditFailedException("EmpId 不能为空");
+        }
+
+        if (passwordEditDTO.getNewPassword() == null || passwordEditDTO.getNewPassword().trim().isEmpty()) {
+            throw new PasswordEditFailedException("newPassword 不能为空");
+        }
+
+        if (passwordEditDTO.getOldPassword() == null || passwordEditDTO.getOldPassword().trim().isEmpty()) {
+            throw new PasswordEditFailedException("oldPassword 不能为空");
+        }
+
+        // 和DB里面的记录对比一下旧密码
+        String dbPassword = employeeService.queryById(passwordEditDTO.getEmpId()).getPassword();
+        Assert.isTrue(employeeService.isPasswordMatched(passwordEditDTO.getOldPassword(), dbPassword), "oldPassword 不正确");
+
+        // 修改密码
+        Employee build = Employee.builder().id(passwordEditDTO.getEmpId()).password(passwordEditDTO.getNewPassword()).build();
+        boolean status = employeeService.changePassword(build);
+
+        if (!status) {
+            throw new PasswordEditFailedException("DB更新失败");
+        }
+
+        return Result.success();
+
+
     }
 
 

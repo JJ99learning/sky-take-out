@@ -48,4 +48,17 @@ public interface EmployeeService {
      */
     void updateInfo(EmployeeDTO employeeDTO);
 
+    /**
+     * 密码比对
+     * @param oldPassword
+     * @param dbPassword
+     * @return
+     */
+    boolean isPasswordMatched(String oldPassword, String dbPassword);
+
+    /**
+     * 修改密码
+     * @param employee
+     */
+    boolean changePassword(Employee employee);
 }

@@ -158,4 +158,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.update(employee);
     }
+
+    @Override
+    public boolean isPasswordMatched(String oldPassword, String dbPassword) {
+
+        oldPassword = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
+
+        return  oldPassword.equals(dbPassword);
+    }
+
+    @Override
+    public boolean changePassword(Employee employee) {
+
+        employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
+        employeeMapper.update(employee);
+        Employee e = employeeMapper.queryById(employee.getId());
+        if (e == null) {
+            return false;
+        }
+
+        return true;
+
+    }
 }
