@@ -145,5 +145,11 @@ public class DishServiceImpl implements DishService {
 
     }
 
+    @Override
+    public List<DishVO> listWithFlavor(Dish dish) {
+        List<DishVO> list = dishMapper.getByCategoryId(dish.getCategoryId());
+        return list;
+    }
+
 
 }
