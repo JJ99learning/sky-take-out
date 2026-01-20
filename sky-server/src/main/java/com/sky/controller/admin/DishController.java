@@ -114,5 +114,20 @@ public class DishController {
         redisTemplate.delete(keys);
     }
 
+    /**
+     * 根据分类id查询菜品
+     * @param categoryId
+     * @return
+     */
+    @GetMapping("/list")
+    @ApiOperation("根据分类id查询菜品")
+    public Result<List<DishVO>> list(Long categoryId) {
+        log.info("根据分类id查询菜品：{}", categoryId);
+
+        // 注意：这里调用的 service 方法你要确保已经写了
+        List<DishVO> list = dishService.list(categoryId);
+
+        return Result.success(list);
+    }
 
 }
