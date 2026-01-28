@@ -9,6 +9,7 @@ import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,4 +32,12 @@ public interface SetmealMapper {
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 
     List<Setmeal> getByCategoryId(Long categoryId);
+
+    Setmeal getById(Long id);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Setmeal setmeal);
+
+
+    void delete(Long id);
 }

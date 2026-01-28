@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/admin/setmeal")
+@RestController("userSetmealController")
+@RequestMapping("/user/setmeal")
 @Api(tags = "套餐相关接口")
 @Slf4j
 public class SetmealController {
@@ -27,19 +27,19 @@ public class SetmealController {
     @Autowired
     private SetmealService setmealService;
 
-    /**
-     * 新增套餐
-     * @param setmealDTO
-     * @return
-     */
-    @PostMapping
-    @ApiOperation("新增套餐")
-    public Result save(@RequestBody SetmealDTO setmealDTO) {
-
-        setmealService.saveWithDish(setmealDTO);
-        return Result.success();
-
-    }
+//    /**
+//     * 新增套餐
+//     * @param setmealDTO
+//     * @return
+//     */
+//    @PostMapping
+//    @ApiOperation("新增套餐")
+//    public Result save(@RequestBody SetmealDTO setmealDTO) {
+//
+//        setmealService.saveWithDish(setmealDTO);
+//        return Result.success();
+//
+//    }
 
     @GetMapping("/page")
     @ApiOperation("分页查询")

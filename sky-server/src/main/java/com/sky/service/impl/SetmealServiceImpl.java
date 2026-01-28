@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
@@ -17,7 +18,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -74,4 +77,66 @@ public class SetmealServiceImpl implements SetmealService {
         List<Setmeal> list = setmealMapper.getByCategoryId(setmeal.getCategoryId());
         return list;
     }
+
+    @Override
+    public SetmealVO getById(Long id) {
+
+        // Get the setmeal by Id
+        Setmeal setmeal = setmealMapper.getById(id);
+
+        SetmealVO setmealvo = new SetmealVO();
+        BeanUtils.copyProperties(setmeal, setmealvo);
+
+        // Query the setmeal_dish for getting the dishes under this setmeal
+        List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealDishBySetmealId(id);
+        setmealvo.setSetmealDishes(setmealDishes);
+
+        return setmealvo;
+
+
+    }
+
+    @Override
+    public void update(SetmealDTO setmealDTO) {
+
+        //Check if this setmeal is exist
+        Setmeal setmeal = setmealMapper.getById(setmealDTO.getId());
+
+        if (setmeal == null) {
+            throw new BaseException("套餐不存在");
+        }
+
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+
+
+        setmealMapper.update(setmeal);
+    }
+
+    @Override
+    @Transactional
+    public List<Long> delete(List<Long> ids) {
+
+        List<Long> unableDeleteList = new ArrayList<>();
+
+        ids.forEach(id -> {
+            Setmeal setmeal = setmealMapper.getById(id);
+            if (setmeal.getStatus() == StatusConstant.ENABLE) {
+                unableDeleteList.add(id);
+            }
+        });
+
+        if (unableDeleteList.size() > 0) {
+            ids.removeAll(unableDeleteList);
+        }
+
+        // Remove the id that can be deleted
+        ids.forEach(id -> {
+            setmealMapper.delete(id);
+            setmealDishMapper.delete(id);
+        });
+
+        return unableDeleteList;
+    }
+
+
 }

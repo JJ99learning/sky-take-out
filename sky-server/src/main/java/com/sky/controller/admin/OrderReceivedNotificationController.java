@@ -41,14 +41,6 @@ public class OrderReceivedNotificationController {
         String jsonString = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(jsonString);
 
-//        try {
-//            // 使用 Jackson 序列化，保持和框架一致
-//            String jsonString = objectMapper.writeValueAsString(map);
-//            webSocketServer.sendToAllClient(jsonString);
-//        } catch (JsonProcessingException e) {
-//            log.error("JSON转换失败", e);
-//        }
-
         return Result.success();
     }
 
